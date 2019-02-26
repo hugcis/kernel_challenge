@@ -19,7 +19,7 @@ class Logistic:
             eta = sigmoid(w.dot(X.T))
             gradl = X.T.dot(y-eta)
             Hl = -X.T.dot(np.diag(eta*(1-eta))).dot(X)
-            w_new = w - 0.01*np.linalg.inv(Hl + self.reg*np.identity(Hl.shape[0])).dot(gradl) #
+            w_new = w - 0.01*np.mean(np.linalg.inv(Hl + self.reg*np.identity(Hl.shape[0])).dot(gradl), axis=1) #
 
         self.w = w_new
         
