@@ -1,4 +1,5 @@
 import numpy as np
+from kernels.base_kernel import Kernel
 
 class CountingKernel(Kernel):
     """ Feature map counts the different patterns of length k in the sequence """
