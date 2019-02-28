@@ -12,8 +12,9 @@ class Kernel():
     def feature_map(self, X):
         pass
     def get_kernel_matrix(self,X, Xi=None):
-       
+        print("get feature map")
         X_f = self.feature_map(X)
+        print("get feature map ok")
         if Xi is None:
             Xi_f = X_f
         else:

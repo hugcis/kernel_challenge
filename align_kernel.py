@@ -1,14 +1,13 @@
 import numpy as np
+from kernel import Kernel
 
-class CountingKernel(Kernel):
+class AlignKernel(Kernel):
     """ Feature map counts the different patterns of length k in the sequence """
     
-    patterns_2 = sorted(["".join([l1, l2]) for l1 in letters for l2 in letters])
-    patterns_3 = sorted(["".join([l1, l2, l3]) for l1 in letters for l2 in letters for l3 in letters])
-    
+   
     def __init__(self, k=3, name="Counting Kernel"):
         
-        super().__init__()
+        super().__init__(name, is_feature_map=False)
         self.feature_map = False
      
     
@@ -16,6 +15,13 @@ class CountingKernel(Kernel):
         """ Align 2 strings. Too long for now. Last part can probably be removed"""
         n = len(str_0) 
         m = len(str_1) 
+        gap_score = -2
+        matrix_sim = np.array([ 
+                        [2, -1, 1, -1], 
+                        [-1, 2, -1, 1],
+                        [1, -1, 2, -1],
+                        [-1, 1, -1, 2]])
+        index_w= {"A":0, "C":1, "G":2, "T":3}
         D = np.zeros((n + 1,m + 1))
         D[0,0] = 0
         aln_0 = ""
@@ -75,7 +81,8 @@ class CountingKernel(Kernel):
                 score += gap_score
             else:
                 score += matrix_sim[index_w[a], index_w[b]]
-
+        print(aln_0)
+        print(aln_1)
         return score
     
     def get_matrix(self, X):
