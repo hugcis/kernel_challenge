@@ -3,7 +3,8 @@ from kernels.base_kernel import Kernel
 from scipy.spatial.distance import pdist, squareform
 
 class RBFKernel:
-    def __init__(self, sigma):
+    def __init__(self, sigma, name="RBF Kernel"):
+        self.name = name
         self.sigma = sigma
     
     def get_kernel_matrix(self, X):
