@@ -12,9 +12,13 @@ class RBFKernel:
                 (2 * self.sigma**2)))
     
     def predict_function(self, alphas, data, X):
-        dists = np.zeros((data.shape[0], X.shape[0]))
+        kernel_mat = np.zeros((data.shape[0], X.shape[0]))
         for i in range(X.shape[0]):
-            dists[:, i] = np.sum((data[:, :] - X.T[:, i])**2, axis=1)
+            kernel_mat[i:, i] = np.exp(
+                - np.sum((data[i:, :] - X.T[:, i])**2, axis=1)/ 
+                (2 * self.sigma**2))
 
-        kernel_mat = np.exp(- dists / (2 * self.sigma**2))
-        return np.sign( np.sum(alphas[:, None] * kernel_mat, axis=0) )
+        kernel_mat = (kernel_mat + kernel_mat.T - 
+                      np.diag(np.diagonal(kernel_mat)))
+        return np.sign( np.sum(alphas.reshape(-1, 1) * kernel_mat, 
+                        axis=0) )
