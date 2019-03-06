@@ -12,13 +12,16 @@ class RBFKernel:
                 (2 * self.sigma**2)))
     
     def predict_function(self, alphas, data, X):
-        kernel_mat = np.zeros((data.shape[0], X.shape[0]))
-        for i in range(X.shape[0]):
-            kernel_mat[i:, i] = np.exp(
-                - np.sum((data[i:, :] - X.T[:, i])**2, axis=1)/ 
-                (2 * self.sigma**2))
-
-        kernel_mat = (kernel_mat + kernel_mat.T - 
-                      np.diag(np.diagonal(kernel_mat)))
+        # Much faster if the kernel mat is symmetric
+        if np.all(data == X):
+            kernel_mat = (np.exp(- squareform(pdist(X, 'euclidean')**2)/ 
+                          (2 * self.sigma**2)))
+        else:
+            kernel_mat = np.zeros((data.shape[0], X.shape[0]))
+            for i in range(X.shape[0]):
+                kernel_mat[:, i] = np.exp(
+                    - np.sum((data[:, :] - X.T[:, i])**2, axis=1)/ 
+                    (2 * self.sigma**2))
+    
         return np.sign( np.sum(alphas.reshape(-1, 1) * kernel_mat, 
                         axis=0) )
