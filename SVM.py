@@ -9,7 +9,7 @@ class SVM:
         self.C = C
         
         if kernel == 'linear':
-            self.kernel = LinearKernel()
+            self.kernel = LinearKernel(name="Linear Kernel")
         elif kernel == 'rbf':
             # Default sigma is 1 if not given
             self.kernel = RBFKernel(kwargs.get('sigma', 1))
