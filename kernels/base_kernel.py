@@ -1,7 +1,7 @@
 import numpy as np 
 
 
-class Kernel():
+class Kernel:
     """ Abstract Class. Each kernel should inherit from this class """
     def __init__(self, name, is_feature_map=False):
         """ Feature map is a boolean"""

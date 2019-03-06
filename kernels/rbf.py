@@ -2,12 +2,15 @@ import numpy as np
 from kernels.base_kernel import Kernel
 from scipy.spatial.distance import pdist, squareform
 
-class RBFKernel:
-    def __init__(self, sigma, name="RBF Kernel"):
-        self.name = name
+class RBFKernel(Kernel):
+    def __init__(self, sigma='auto', name="RBF Kernel"):
+        super().__init__(name)
         self.sigma = sigma
     
     def get_kernel_matrix(self, X):
+        if self.sigma == 'auto':
+            self.sigma = np.sqrt(X.shape[1])
+
         return (np.exp(- squareform(pdist(X, 'euclidean')**2) / 
                 (2 * self.sigma**2)))
     

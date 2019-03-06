@@ -9,10 +9,10 @@ class SVM:
         self.C = C
         
         if kernel == 'linear':
-            self.kernel = LinearKernel(name="Linear Kernel")
+            self.kernel = LinearKernel()
         elif kernel == 'rbf':
             # Default sigma is 1 if not given
-            self.kernel = RBFKernel(kwargs.get('sigma', 1))
+            self.kernel = RBFKernel(kwargs.get('sigma', 'auto'))
         else:
             self.kernel = kernel
             
@@ -29,7 +29,10 @@ class SVM:
     def fit(self, X, Y): 
         self.t_data = X.copy() # store data for predictions
         
+        # Compute kernel matrix
         kernel_mat = self.kernel.get_kernel_matrix(X)
+
+        # Set up all variables in the QP problem
         P = matrix(kernel_mat)
         q = matrix(-Y.astype(np.double))
         G = matrix(
