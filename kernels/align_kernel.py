@@ -1,15 +1,13 @@
 import numpy as np
 from kernels.base_kernel import Kernel
 
-class CountingKernel(Kernel):
+class AlignKernel(Kernel):
     """ Feature map counts the different patterns of length k in the sequence """
     
-    patterns_2 = sorted(["".join([l1, l2]) for l1 in letters for l2 in letters])
-    patterns_3 = sorted(["".join([l1, l2, l3]) for l1 in letters for l2 in letters for l3 in letters])
-    
-    def __init__(self, k=3, name="Counting Kernel"):
+
+    def __init__(self,name="Counting Kernel"):
         
-        super().__init__()
+        super().__init__(name)
         self.feature_map = False
      
     
@@ -17,6 +15,13 @@ class CountingKernel(Kernel):
         """ Align 2 strings. Too long for now. Last part can probably be removed"""
         n = len(str_0) 
         m = len(str_1) 
+        gap_score = -2
+        matrix_sim = np.array([ 
+                        [2, -1, 1, -1], 
+                        [-1, 2, -1, 1],
+                        [1, -1, 2, -1],
+                        [-1, 1, -1, 2]])
+        index_w= {"A":0, "C":1, "G":2, "T":3}
         D = np.zeros((n + 1,m + 1))
         D[0,0] = 0
         aln_0 = ""
@@ -76,19 +81,23 @@ class CountingKernel(Kernel):
                 score += gap_score
             else:
                 score += matrix_sim[index_w[a], index_w[b]]
-
+      
         return score
     
-    def get_matrix(self, X):
+    def predict_function(self, alphas, data, X_pred):
+        matrix = self.get_kernel_matrix(data, Xi=X_pred)
+        return np.sign(np.sum(alphas * matrix, axis = 0))
+    
+    def get_kernel_matrix(self, X, Xi=None):
         """ X is a dataframe. Returns an array """
-        K = np.zeros((len(seq), len(seq)))
-        seq = X["seq"]
-        for i,s1 in enumerate(seq):
-            for j in range(i):
+        if Xi is None:
+            Xi = X
+        K = np.zeros((len(X), len(Xi)))
+        
+        for i,s1 in enumerate(X):
+            for j in range(len(Xi)):
 
-                s2 = seq[i]
+                s2 = Xi[j]
                 score = self.align(s1, s2)
                 K[i, j] = score
-                K[j, i] = score
-            K[i,i] = len(s1) * matrix_sim[0]
         return K 
