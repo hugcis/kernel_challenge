@@ -25,22 +25,23 @@ class RidgeRegression():
 
     def fit(self):
         """ Fit the model : Estimate w, which contains the biais w[0] """
-        x_ = np.append(np.ones((self.n,1)), self.x, axis=1)
-        kernel_mat = self.kernel.get_kernel_matrix(x_)
+        #x_ = np.append(np.ones((self.n,1)), self.x, axis=1)
+        kernel_mat = self.kernel.get_kernel_matrix(self.x)
         #ans=x_.dot(x_.T)+ self.reg*self.n*np.ones((self.n,self.n))
-        ans=kernel_mat+ self.reg*self.n*np.ones((self.n,self.n))
+        ans = kernel_mat + self.reg*self.n*np.ones((self.n,self.n))
         ans_inv=np.linalg.pinv(ans)
-        alpha=ans_inv.dot(self.y)
-        w_hat = x_.T.dot(alpha)
+        alpha = ans_inv.dot(self.y)
+        w_hat = kernel_mat.dot(alpha)
         self.w = w_hat
 
 
-    def predict(self, x):
-        xi = np.append(np.ones((len(x),1)), x, axis=1)
-        return self.w.T.dot(xi.T)
+    def predict(self, X_pred):
+        return self.kernel.predict_function(self.w,
+                                            self.x, 
+                                            X_pred)
     
     def compute_misclassif_error(self, X, y):
-        res=np.sign(self.predict(X)).T
-        error=np.sum(res!= y)/len(y)
+        res = np.sign(self.predict(X)).T
+        error = np.sum(res!= y.reshape(-1))/len(y.reshape(-1))
         return error
 
